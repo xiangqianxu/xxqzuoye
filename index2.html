@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			#wrap{
+				width: 800px;
+				height: 500px;
+				border: solid 1px red;
+				position: relative;
+			}
+			#wrap div{
+				width: 150px;
+				height: 100px;
+				border: solid 1px red;
+			}
+			/*#ywb{
+				width: 150px;
+				height: 150px;
+				border: solid 1px yellow;
+				position: absolute;
+				top:mathradem(800,500)-1;
+				left:mathradem(800,500)-1;
+			}*/
+		</style>
+	</head>
+	<body>
+		新年愿望：<input type="text" id="yuanwang" />
+		<button>提交</button>
+		<div id="wrap">
+		</div>
+	</body>
+	<script src="js/jquery-1.11.1.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		$("button").click(function(){
+			let obj={
+				yuanwang:$("#yuanwang").val(),
+				count:0
+			}
+//			$.get("http://localhost:8080/add",obj,(res)=>{
+//				console.log(res)
+//				getmsg()
+//			})
+			
+			$.post("http://localhost:8080/add",obj,(res)=>{
+				getmsg()
+			})
+		})
+		
+		
+		
+		getmsg()
+		function getmsg(){
+			$.get("http://localhost:8080/msg",(res)=>{
+				console.log(res)
+				showpage(res)
+			})
+		}
+		
+		function showpage(arr){
+			let str="";
+			for (var i = 0; i < arr.length; i++) {
+				str+=`
+				    <div id="ywb">
+			            <a href="#" onclick="del('${arr[i]._id}')">删除</a>
+			            <p>${arr[i].yuanwang}</p>
+			            <p onclick="bianse(${JSON.stringify(arr[i])})">✔</p>
+		            </div>
+				`
+			}
+			$("#wrap").html(str);
+			
+			$("#wrap>div").each(function(item,index){
+				$(this).css({
+					position:"absolute",
+					top:mathradom(400,10),
+					left:mathradom(650,10)
+				})
+			})
+			aa()
+			console.log($("input[type=checked]"))
+		}
+		//删除一条数据
+		function del(id){
+			console.log(id)
+			$.get("http://localhost:8080/delete?id="+id,(res)=>{
+				getmsg()
+			})
+		}
+		
+		//变色
+		let count=0;
+		function bianse(obj){
+			count++;
+			$.get("http://localhost/bianse",obj,(res)=>{
+					getmsg()
+				    console.log(res)
+				})
+//			if(count%2==0){
+//				let obj={
+//					id:obj._id,
+//					count:0
+//				}
+//				$.get("http://localhost/bianse",obj,(res)=>{
+//					getmsg()
+//				    console.log(res)
+//				})
+//			}else{
+//				let obj={
+//					id:obj._id,
+//					count:1
+//				}
+//				$.get("http://localhost/bianse",obj,(res)=>{
+//					getmsg()
+//				    console.log(res)
+//				})
+//			}
+			
+		}
+		
+		function mathradom(max,min){
+			return parseInt(Math.random()*(max-min)+min)
+			
+		}
+		function aa(){
+			let wrap =document.querySelector("#wrap")
+			var arr1=document.querySelectorAll("#wrap div")
+			for (var i = 0; i < arr1.length; i++) {
+				//console.log(arr1[i].offsetLeft)
+				let left =wrap.offsetWidth-arr1[i].offsetLeft
+				let top =wrap.offsetHeight-arr1[i].offsetTop
+				console.log(top)
+			}
+			
+		}
+	</script>
+</html>
